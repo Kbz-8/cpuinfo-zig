@@ -11,6 +11,12 @@ pub fn build(b: *std.Build) void {
         .link_libc = (@import("builtin").os.tag == .windows),
     });
 
+    const lib = b.addLibrary(.{
+        .name = "cpuinfo",
+        .root_module = mod,
+    });
+    b.installArtifact(lib);
+
     const test_step = b.addTest(.{ .root_module = mod });
     b.step("test", "Run library tests").dependOn(&b.addRunArtifact(test_step).step);
 }
