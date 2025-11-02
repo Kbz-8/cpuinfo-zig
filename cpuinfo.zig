@@ -36,7 +36,8 @@ pub const get = switch (builtin.os.tag) {
 fn getLinux(allocator: std.mem.Allocator) !CpuInfo {
     const f = try std.fs.openFileAbsolute("/proc/cpuinfo", .{});
     defer f.close();
-    const r = f.reader();
+
+    const r = f.deprecatedReader();
 
     var key_buf: [64]u8 = undefined;
     const name = while (r.readUntilDelimiter(&key_buf, ':')) |key_full| {
@@ -227,5 +228,5 @@ test {
     try std.testing.expect(info.max_mhz > 0);
 
     var buf: [512]u8 = undefined;
-    _ = try std.fmt.bufPrint(&buf, "{}", .{info});
+    _ = try std.fmt.bufPrint(&buf, "{any}", .{info});
 }

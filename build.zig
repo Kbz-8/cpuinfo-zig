@@ -1,15 +1,16 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    _ = b.addModule("cpuinfo", .{
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    const mod = b.createModule(.{
         .root_source_file = b.path("cpuinfo.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = (@import("builtin").os.tag == .windows),
     });
 
-    const test_step = b.addTest(.{
-        .root_source_file = b.path("cpuinfo.zig"),
-    });
-    if (@import("builtin").os.tag == .windows) {
-        test_step.linkLibC();
-    }
+    const test_step = b.addTest(.{ .root_module = mod });
     b.step("test", "Run library tests").dependOn(&b.addRunArtifact(test_step).step);
 }
